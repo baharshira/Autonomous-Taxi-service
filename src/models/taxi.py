@@ -1,40 +1,39 @@
 from pydantic import BaseModel, root_validator
-from state import State
 import threading
-import random
+from src.utils.generate_location import generate_location
 from typing import Tuple
-from request import Request
-from utils import *
-
-# Generator function for unique taxi IDs
-def id_generator():
-    id = 1
-    while True:
-        yield id
-        id += 1
+from src.models.request import Request
+from src.utils.distance_calculator import distance_calculator
+from src.utils.id_generator import id_generator
 
 # Create a generator instance
 taxi_id_gen = id_generator()
 
+from enum import Enum
+
+class State(Enum):
+    IDLE = 'idle'  # Use uppercase for enum names as a convention
+    BUSY = 'busy'
+
 class Taxi(BaseModel):
     id: int
-    state: State = State.idle
+    state: State = State.IDLE
     velocity: float = 72
     location: Tuple[float, float]
 
     @root_validator(pre=True)
     def assign_id_and_location(cls, values):
         values['id'] = next(taxi_id_gen)  # Assign a new ID for each instance
-        values['location'] = [random.uniform(0, 20), random.uniform(0, 20)]  # x, y coordinates of a random location
+        values['location'] = generate_location()
 
         return values
 
     def assign_request(self, request: Request) -> None:
         """Assign a request to the taxi and simulate travel time"""
-        self.state = State.busy
+        self.state = State.BUSY
         start, end = request.start_location, request.end_location
 
-        travel_time = distance_to(self.location, start) + distance_to(start, end)
+        travel_time = distance_calculator(self.location, start) + distance_calculator(start, end)
 
         print(f"🚕 Taxi {self.id} is assigned to request {request} and will be busy for {travel_time:.2f} seconds.")
 
@@ -48,6 +47,6 @@ class Taxi(BaseModel):
             end_location = (0.0, 0.0)  # Fallback to prevent crash
 
         self.location = end_location  # ✅ Update taxi's location
-        self.state = State.idle  # ✅ Mark taxi as available again
+        self.state = State.IDLE  # ✅ Mark taxi as available again
 
         print(f"✅ Taxi {self.id} completed its trip, now idle at {end_location}.")
