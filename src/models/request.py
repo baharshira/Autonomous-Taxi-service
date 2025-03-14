@@ -1,6 +1,5 @@
 from pydantic import BaseModel, root_validator
 from typing import Tuple
-import random
 from src.utils.distance_calculator import distance_calculator
 from src.utils.generate_location import generate_location
 

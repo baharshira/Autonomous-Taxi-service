@@ -1,5 +1,5 @@
 from enum import Enum
 
 class State(Enum):
-    idle = 'idle'
-    busy = 'busy'
+    IDLE = 'idle'
+    BUSY = 'busy'

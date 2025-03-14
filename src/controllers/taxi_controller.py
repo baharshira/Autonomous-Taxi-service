@@ -13,7 +13,6 @@ class TaxiController(BaseModel):
         """Add a new request to the queue"""
         self.requests.append(request)
         print(f"📌 New request added: {request}")
-        print(self.taxis)
 
     def process_requests(self) -> None:
         """Process the requests in the queue, assigning taxis to them"""

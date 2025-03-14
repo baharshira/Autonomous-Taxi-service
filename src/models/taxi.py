@@ -5,11 +5,10 @@ from typing import Tuple
 from src.models.request import Request
 from src.utils.distance_calculator import distance_calculator
 from src.utils.id_generator import id_generator
+from enum import Enum
 
 # Create a generator instance
 taxi_id_gen = id_generator()
-
-from enum import Enum
 
 class State(Enum):
     IDLE = 'idle'  # Use uppercase for enum names as a convention
