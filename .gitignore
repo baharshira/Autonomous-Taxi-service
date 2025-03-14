@@ -1,0 +1,21 @@
+# JetBrains IDE files
+.idea/
+
+# Python bytecode cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+.env/
+env/
+
+# Dependency directories
+*.egg-info/
+dist/
+build/
+
+# Miscellaneous
+*.log
+*.DS_Store  # macOS-specific
