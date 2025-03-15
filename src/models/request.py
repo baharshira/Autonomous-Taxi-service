@@ -1,25 +1,29 @@
-from pydantic import BaseModel, root_validator
+from pydantic import BaseModel
 from typing import Tuple
 from src.utils.distance_calculator import distance_calculator
-from src.utils.generate_location import generate_location
-
+from src.utils.request_location_generator import generate_request_locations
 
 class Request(BaseModel):
+    request_id: int
     start_location: Tuple[float, float]
     end_location: Tuple[float, float]
+    distance: float
 
-    @root_validator(pre=True)
-    def generate_locations(cls, values):
-        # Generate random start location within 20km
-        start_location = generate_location()
-        end_location = generate_location()
-        max_distance = 2.0  # 2 km
+    def __init__(self, request_id: int, **data):
+        # Generate locations and distance
+        start, end = generate_request_locations()
+        distance = distance_calculator(start, end)
 
-        while distance_calculator(start_location, end_location) > max_distance:
-            # Randomly generate the end location within a max distance of 2km
-            end_location = generate_location()
+        super().__init__(
+            request_id=request_id,
+            start_location=start,
+            end_location=end,
+            distance=distance,
+            **data
+        )
 
-        values['start_location'] = start_location
-        values['end_location'] = end_location
-
-        return values
+    def __str__(self) -> str:
+        return (f"Request No.{self.request_id}, "
+                f"starts at {self.start_location}, "
+                f"ends at {self.end_location}, "
+                f"total distance: {self.distance:.2f} km")

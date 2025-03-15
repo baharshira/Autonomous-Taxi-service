@@ -1,6 +1,8 @@
 # JetBrains IDE files
 .idea/
 
+menual_tets.py
+
 # Python bytecode cache
 __pycache__/
 *.py[cod]
