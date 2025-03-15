@@ -24,6 +24,6 @@ class Request(BaseModel):
 
     def __str__(self) -> str:
         return (f"Request No.{self.request_id}, "
-                f"starts at {self.start_location}, "
-                f"ends at {self.end_location}, "
-                f"total distance: {self.distance:.2f} km")
+                f"Starts at {self.start_location}, "
+                f"Ends at {self.end_location}, "
+                f"Trip distance: {self.distance:.2f} km.")
