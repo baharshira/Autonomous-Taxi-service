@@ -7,7 +7,7 @@ from src.models.state import State
 
 
 def test_assign_closest_taxi_no_location_dependency():
-    """Test that a taxi is allocated to a request, ignoring exact locations."""
+    """Test that a taxi is allocated to a request."""
     taxis = [Taxi(taxi_id=1), Taxi(taxi_id=2)]
     controller = TaxiController(taxis=taxis)
     request = Request(request_id=1)
