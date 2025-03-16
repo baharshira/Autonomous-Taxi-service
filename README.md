@@ -17,6 +17,3 @@ This project simulates an autonomous taxi service where taxis are assigned to ri
 2. Install all required libraries:
 ```bash
 pip install -r requirements.txt
-
-## Start the app
-run python main.py
