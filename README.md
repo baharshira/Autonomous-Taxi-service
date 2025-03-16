@@ -13,3 +13,6 @@ This project simulates an autonomous taxi service where taxis are assigned to ri
    ```bash
    git clone <repository-url>
    cd autonomous_taxi_service
+   pip install -r requirements.txt
+
+to start the app, please run python main.py
