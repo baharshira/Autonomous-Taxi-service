@@ -5,13 +5,14 @@ from pydantic import BaseModel
 
 from src.models.state import State
 from src.models.request import Request
-from src.utils.distance_calculator import get_total_travel_distance
-from src.utils.generate_location import generate_location
-from constants import VELOCITY, MARK_AS_FINISHED, TAXI_PREFIX
-from logging_config import logger
+from src.utils.distance_utils import compute_total_trip_distance
+from src.utils.location_utils import create_random_location
+from src.constants import VELOCITY, MARK_AS_FINISHED, TAXI_PREFIX
+from src.logging_config import logger
 
 
 class Taxi(BaseModel):
+    """A taxi with state, velocity, and location."""
     taxi_id: int
     state: State = State.IDLE
     velocity: float = VELOCITY  # For further improvements - the velocity should be dynamic and not hard-coded.
@@ -20,7 +21,7 @@ class Taxi(BaseModel):
     def __init__(self, taxi_id, **data):
         super().__init__(
             taxi_id=taxi_id,
-            location=generate_location(),
+            location=create_random_location(),
             **data
         )
 
@@ -29,28 +30,33 @@ class Taxi(BaseModel):
         try:
             self.state = State.BUSY
             start, end = request.start_location, request.end_location
-            total_distance = get_total_travel_distance(self.location, start, end)
+            total_distance = compute_total_trip_distance(self.location, start, end)
             total_travel_time_in_seconds = (total_distance / self.velocity) * 3600
 
-            print(f"{TAXI_PREFIX} Taxi {self.taxi_id} assigned to request No.{request.request_id}. "
+            print(
+                f"{TAXI_PREFIX} Taxi {self.taxi_id} assigned to request No.{request.request_id}. "
                   f"Total Distance: {total_distance:.2f} km, "
-                  f"Total Travel time: {total_travel_time_in_seconds:.2f} seconds.")
+                  f"Total Travel time: {total_travel_time_in_seconds:.2f} seconds."
+            )
 
             # Simulate travel with a timer
-            threading.Timer(total_travel_time_in_seconds, self.complete_trip, args=[request]).start()
+            threading.Timer(total_travel_time_in_seconds, self._complete_trip, args=[request]).start()
+
         except Exception as e:
             logger.error(f"Error assigning request to taxi {self.taxi_id}: {e}")
             self.state = State.IDLE  # Reset state on failure
 
-    def complete_trip(self, request: Request) -> None:
+    def _complete_trip(self, request: Request) -> None:
         """Mark taxi as idle and update its location after completing the trip."""
         try:
             self.location = request.end_location
             self.state = State.IDLE
 
-            print(f"{MARK_AS_FINISHED} "
+            print(
+                f"{MARK_AS_FINISHED} "
                   f"Taxi {self.taxi_id} completed trip, "
-                  f"Now idle at {self.location}.")
+                  f"Now idle at {self.location}."
+            )
 
         except Exception as e:
             logger.error(f"Error completing trip for taxi {self.id}: {e}")

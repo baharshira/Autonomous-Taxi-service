@@ -7,8 +7,8 @@ from pydantic import BaseModel
 from src.models.taxi import Taxi
 from src.models.request import Request
 from src.models.state import State
-from src.utils.distance_calculator import distance_calculator
-from constants import NUM_TAXIS, REQUEST_ADDED_PREFIX, NO_IDLE_TAXIS_PREFIX, TAXI_PREFIX
+from src.utils.distance_utils import calculate_manhattan_distance
+from src.constants import NUM_TAXIS, REQUEST_ADDED_PREFIX, NO_IDLE_TAXIS_PREFIX, TAXI_PREFIX
 
 
 class TaxiController(BaseModel):
@@ -16,8 +16,8 @@ class TaxiController(BaseModel):
     requests: Deque[Request] = deque()
 
     class Config:
-        arbitrary_types_allowed = True  # Allow Lock, for threading concurrency
-        extra = 'allow'
+        arbitrary_types_allowed = True # Allows non-Pydantic types like deque
+        extra = 'allow' # Permits additional attributes like lock
 
     def __init__(self, **data):
         super().__init__(**data)
@@ -55,7 +55,7 @@ class TaxiController(BaseModel):
         """Finds the taxi that is closes to the request's start location."""
         closest_taxi = min(
             idle_taxis,
-            key=lambda taxi: distance_calculator(taxi.location, request.start_location),
+            key=lambda taxi: calculate_manhattan_distance(taxi.location, request.start_location),
         )
 
         closest_taxi.assign_request(request)

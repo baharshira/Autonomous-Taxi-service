@@ -2,5 +2,6 @@ from enum import Enum
 
 
 class State(Enum):
-    IDLE = 'idle'
-    BUSY = 'busy'
+    """Represents the possible states of a taxi."""
+    IDLE = "idle"
+    BUSY = "busy"

@@ -1,3 +1,4 @@
+import time
 import threading
 
 from src.controllers.taxi_controller import TaxiController
@@ -7,6 +8,7 @@ from logging_config import logger
 
 
 def main():
+    """Program's entry point, initialize and run the autonomous taxi service simulation."""
     controller = TaxiController()
 
     # Start the request generator in a separate thread
@@ -29,14 +31,17 @@ def main():
 
     updater_thread.start()
 
-    # Keep the main thread alive
-    while True:
-        try:
-            while True:
-                request_thread.join(1.0)  # Check if threads are alive periodically
-                updater_thread.join(1.0)
-        except KeyboardInterrupt:
-            logger.info("Shutting down application")
+    # Keep main thread alive and handle shutdown
+    try:
+        while True:
+            time.sleep(1.0)  # Check periodically without busy-waiting
+            if not (request_thread.is_alive() and updater_thread.is_alive()):
+                logger.error("One or more threads stopped unexpectedly")
+                break
+    except KeyboardInterrupt:
+        logger.info("Received shutdown signal, exiting gracefully")
+    finally:
+        logger.info("Simulation terminated")
 
 if __name__ == "__main__":
     main()

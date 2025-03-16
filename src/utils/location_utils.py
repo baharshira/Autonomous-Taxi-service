@@ -1,16 +1,16 @@
 import random
 from typing import Tuple
 
-from constants import GRID_SIZE, MAX_DISTANCE
-from src.utils.generate_location import generate_location
-from src.utils.distance_calculator import distance_calculator
-from logging_config import logger
+from src.constants import GRID_SIZE, MAX_DISTANCE
+from src.utils.distance_utils import calculate_manhattan_distance
+from src.logging_config import logger
+
 
 def generate_request_locations() -> Tuple[Tuple[float, float], Tuple[float, float]]:
     """Generate start and end locations with a Manhattan distance <= 2 km within a 20x20 km grid."""
     try:
         # Generate start location
-        start_location = generate_location()
+        start_location = create_random_location()
         start_x, start_y = start_location
 
         # Calculate maximum offsets considering grid boundaries
@@ -35,7 +35,7 @@ def generate_request_locations() -> Tuple[Tuple[float, float], Tuple[float, floa
         if not (0 <= end_x <= GRID_SIZE and 0 <= end_y <= GRID_SIZE):
             raise ValueError(f"End location {end_location} outside grid (0, {GRID_SIZE})")
 
-        distance = distance_calculator(start_location, end_location)
+        distance = calculate_manhattan_distance(start_location, end_location)
         if distance > MAX_DISTANCE:
             raise ValueError(f"Generated distance {distance:.2f} exceeds {MAX_DISTANCE} km")
 
@@ -49,3 +49,13 @@ def generate_request_locations() -> Tuple[Tuple[float, float], Tuple[float, floa
     except Exception as e:
         logger.error(f"Unexpected error in location generation: {e}")
         raise
+
+def create_random_location() -> Tuple[float, float]:
+    """
+    Generates a location tuple (x,y) such that both x and y are in range(0,20) (km units)
+    I rounded the random result to have only 2 floating digits
+    """
+    x_location = round(random.uniform(0, GRID_SIZE),2)
+    y_location = round(random.uniform(0, GRID_SIZE),2)
+
+    return x_location, y_location
