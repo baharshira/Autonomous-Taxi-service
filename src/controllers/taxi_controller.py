@@ -12,7 +12,7 @@ from constants import NUM_TAXIS, REQUEST_ADDED_PREFIX, NO_IDLE_TAXIS_PREFIX, TAX
 
 
 class TaxiController(BaseModel):
-    taxis: List[Taxi] = [Taxi(taxi_id=taxi_id) for taxi_id in range(1,NUM_TAXIS + 1)]
+    taxis: List[Taxi] = [Taxi(taxi_id=taxi_id) for taxi_id in range(1,NUM_TAXIS + 1)] # For further improvements - the number of taxis should be automatically scaled, and not hard-coded
     requests: Deque[Request] = deque()
 
     class Config:
@@ -38,8 +38,8 @@ class TaxiController(BaseModel):
             idle_taxis = self._get_idle_taxis()
 
             if not idle_taxis and self.requests:
-                waiting_ids = ", ".join(str(request.request_id) for request in self.requests)
-                print(f"{NO_IDLE_TAXIS_PREFIX} No idle taxis available. Waiting requests: {waiting_ids}")
+                awaiting_requests_ids = ", ".join(str(request.request_id) for request in self.requests)
+                print(f"{NO_IDLE_TAXIS_PREFIX} No idle taxis available. Awaiting requests: {awaiting_requests_ids}")
                 return
 
             while self.requests and idle_taxis:

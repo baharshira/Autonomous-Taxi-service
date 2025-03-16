@@ -5,16 +5,16 @@ from pydantic import BaseModel
 
 from src.models.state import State
 from src.models.request import Request
-from src.utils.distance_calculator import get_total_travel_time
+from src.utils.distance_calculator import get_total_travel_distance
 from src.utils.generate_location import generate_location
-from constants import VELOCITY, MARK_AS_FINISHED
+from constants import VELOCITY, MARK_AS_FINISHED, TAXI_PREFIX
 from logging_config import logger
 
 
 class Taxi(BaseModel):
     taxi_id: int
     state: State = State.IDLE
-    velocity: float = VELOCITY  # km/h
+    velocity: float = VELOCITY  # For further improvements - the velocity should be dynamic and not hard-coded.
     location: Tuple[float, float]
 
     def __init__(self, taxi_id, **data):
@@ -29,10 +29,10 @@ class Taxi(BaseModel):
         try:
             self.state = State.BUSY
             start, end = request.start_location, request.end_location
-            total_distance = get_total_travel_time(self.location, start, end)
+            total_distance = get_total_travel_distance(self.location, start, end)
             total_travel_time_in_seconds = (total_distance / self.velocity) * 3600
 
-            print(f"🚕 Taxi {self.taxi_id} assigned to request No.{request.request_id}. "
+            print(f"{TAXI_PREFIX} Taxi {self.taxi_id} assigned to request No.{request.request_id}. "
                   f"Total Distance: {total_distance:.2f} km, "
                   f"Total Travel time: {total_travel_time_in_seconds:.2f} seconds.")
 

@@ -1,7 +1,10 @@
-from pydantic import BaseModel
 from typing import Tuple
+
+from pydantic import BaseModel
+
 from src.utils.distance_calculator import distance_calculator
 from src.utils.request_location_generator import generate_request_locations
+
 
 class Request(BaseModel):
     request_id: int

@@ -1,7 +1,9 @@
 import time
+
 from src.controllers.taxi_controller import TaxiController
 from src.models.request import Request
 from src.utils.id_generator import id_generator
+
 
 generate_request_id = id_generator()
 
